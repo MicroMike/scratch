@@ -1,0 +1,8 @@
+
+node_modules/
+
+dist/
+
+static/client\.js
+
+static/vendor\.js

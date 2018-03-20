@@ -5,9 +5,11 @@ import { Route } from 'react-router-dom'
 import Header from './Header/Header'
 import Footer from './Footer/Footer'
 
+import styles from './App.css'
+
 const App = ({ intl }) => (
   <div>
-    <Header />
+    <Header intl={intl} />
     {/* <Route
       path='/'
       component={}
@@ -23,3 +25,4 @@ const mapStateToProps = (store) => {
 }
 
 export default connect(mapStateToProps)(App)
+

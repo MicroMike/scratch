@@ -1,23 +1,19 @@
-import path from 'path'
-import server from './server'
+import http from 'http'
+import app from './server'
 
+const dev = process.env.NODE_ENV !== 'production'
 const port = process.env.PORT || 3000
 const mongoURL = process.env.MONGO_URL || 'mongodb://localhost:27017/mern-starter'
 
-let currentApp = server;
+const server = dev ? http.createServer(app) : app
 
 server.listen(port, () => {
   console.log('Server started on port:' + port)
 })
 
 if (module.hot) {
+  let currentApp = app
   console.log('✅  Server-side HMR Enabled!');
 
-  module.hot.accept('./server', () => {
-    console.log('🔁  HMR Reloading `./server`...');
-    server.removeListener('request', currentApp);
-    const newApp = require('./server').default;
-    server.on('request', newApp);
-    currentApp = newApp;
-  });
+  module.hot.accept();
 }

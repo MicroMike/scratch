@@ -1,18 +1,47 @@
-var path = require('path');
-var config = require('./webpack.config');
-var nodeExternals = require('webpack-node-externals');
+const webpack = require('webpack')
+const path = require('path')
+const nodeExternals = require('webpack-node-externals')
+const StartServerPlugin = require('start-server-webpack-plugin')
 
 var config = {
-  ...config,
   entry: {
-    server: [path.resolve(__dirname, 'server/index.js')],
+    server: [
+      'webpack/hot/poll?1000',
+      path.resolve(__dirname, 'server/index.js')
+    ],
   },
+  watch: true,
   target: 'node',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, '.build'),
+    filename: 'server.js',
   },
-  externals: [nodeExternals()],
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
+  module: {
+    rules: [
+      {
+        test: /.jsx?$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+      },
+    ]
+  },
+  externals: [nodeExternals({
+    whitelist: ['webpack/hot/poll?1000']
+  })],
+  plugins: [
+    new StartServerPlugin('server.js'),
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin({
+        "process.env": {
+            "BUILD_TARGET": JSON.stringify('server')
+        }
+    }),
+  ]
 };
 
 module.exports = config;

@@ -1,30 +1,66 @@
-var path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var config = {
+const port = process.env.PORT || 3000;
+
+module.exports = {
+  mode: 'development',
+  entry: ['react-hot-loader/patch', './client/index.jsx'],
+  output: {
+    filename: 'bundle.[hash].js',
+    publicPath: '/',
+  },
   resolve: {
     extensions: ['.js', '.jsx']
   },
+  devtool: 'source-map',
   module: {
-    loaders: [
+    rules: [
+
+      // First Rule
       {
-        test: /.js?$/,
-        loader: 'babel-loader',
+        test: /\.jsx?$/,
         exclude: /node_modules/,
-        query: {
-          presets: ['es2015', 'react', 'stage-0']
-        }
+        use: ['babel-loader']
       },
-      // {
-      //   test: /\.css$/,
-      //   exclude: /node_modules/,
-      //   loaders: ['style-loader', 'css-loader'],
-      // },
-      // {
-      //   test: /\.(jpe?g|gif|png|svg)$/i,
-      //   loader: 'url-loader?limit=10000',
-      // }
+
+      // Second Rule
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              camelCase: true,
+              sourceMap: true
+            }
+          }
+        ]
+      },
+
+      {
+        test: /\.(jpe?g|gif|png|svg)$/i,
+        exclude: /node_modules/,
+        use: ['url-loader']
+      },
     ]
   },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
+      template: 'public/index.html',
+      // favicon: 'public/favicon.ico'
+    })
+  ],
+  devServer: {
+    host: 'localhost',
+    port: port,
+    historyApiFallback: true,
+    hot: true
+    // open: true
+  }
 };
-
-module.exports = config;
